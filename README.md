@@ -1,9 +1,10 @@
 # Lead Management System
 
-A production-ready lead management system built with Express.js, TypeScript, Prisma, PostgreSQL (Supabase), and Google Sheets integration.
+A production-ready lead management system built with React, Express.js, TypeScript, Prisma, PostgreSQL (Supabase), and Google Sheets integration.
 
 ## Tech Stack
 
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui, Zustand, React Router
 - **Backend:** Node.js, Express.js, TypeScript
 - **Database:** PostgreSQL (Supabase) via Prisma ORM
 - **Auth:** JWT + bcrypt
@@ -14,21 +15,27 @@ A production-ready lead management system built with Express.js, TypeScript, Pri
 
 ```
 lead-management/
+├── frontend/             # React 19 + Vite + TypeScript
+│   ├── src/
+│   │   ├── components/   # UI components (shadcn)
+│   │   ├── pages/        # Route pages
+│   │   ├── services/     # API services
+│   │   ├── store/        # Zustand stores
+│   │   └── types/        # TypeScript types
+│   └── ...
 ├── backend/              # Express.js API
 │   ├── src/
 │   │   ├── config/       # Environment configuration
 │   │   ├── controllers/  # Request handlers
 │   │   ├── lib/          # Prisma client, errors, response utils
-│   │   ├── middleware/    # Auth, validation, rate limiting, error handler
+│   │   ├── middleware/   # Auth, validation, rate limiting
 │   │   ├── routes/       # Express routes
 │   │   ├── services/     # Business logic
 │   │   ├── validators/   # Zod schemas
 │   │   └── index.ts      # App entry point
 │   └── prisma/           # Schema & seed
-├── frontend/             # React app (coming soon)
 ├── apps-script/          # Google Apps Script automation
 ├── api-docs.md           # API documentation
-├── request.http          # HTTP testing file
 └── .env.example          # Environment template
 ```
 
@@ -51,7 +58,11 @@ pnpm install
 ### 2. Environment Variables
 
 ```bash
+# Backend
 cp .env.example backend/.env
+
+# Frontend
+cp frontend/.env.example frontend/.env
 ```
 
 Edit `backend/.env` with your actual values (see `.env.example` for required vars).
@@ -69,13 +80,18 @@ pnpm db:migrate
 pnpm db:seed
 ```
 
-### 4. Start Development Server
+### 4. Start Development Servers
 
 ```bash
+# Terminal 1 - Backend
 pnpm dev:backend
+
+# Terminal 2 - Frontend
+pnpm dev:frontend
 ```
 
-Server runs at `http://localhost:4000`.
+- Backend: `http://localhost:4000`
+- Frontend: `http://localhost:5173`
 
 ### 5. Default Admin Credentials
 
@@ -85,6 +101,20 @@ Password: admin123
 ```
 
 > ⚠️ Change the admin password after first login.
+
+## Frontend
+
+The frontend is a modern React 19 application with:
+
+- **Public Lead Form:** Professional enrollment form at `/`
+- **Admin Login:** Secure login at `/admin/login`
+- **Dashboard:** Lead management at `/admin/dashboard`
+- **Features:**
+  - Form validation with real-time error messages
+  - Search, filter, and pagination
+  - Status management (NEW → CONTACTED)
+  - Responsive design with Tailwind CSS
+  - Toast notifications with Sonner
 
 ## API Documentation
 
@@ -99,7 +129,7 @@ Open `request.http` in VS Code with the [REST Client extension](https://marketpl
 1. Create a Google Cloud project and enable the Sheets API
 2. Create a service account and download credentials
 3. Share your Google Sheet with the service account email
-4. Set `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY`, and `GOOGLE_SHEET_ID` in `.env`
+4. Set `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY`, and `GOOGLE_SHEET_ID` in `backend/.env`
 
 ## Apps Script Deployment
 
@@ -116,6 +146,21 @@ Open `request.http` in VS Code with the [REST Client extension](https://marketpl
 | Frontend | Vercel / Netlify |
 | Backend | Railway / Render |
 | Database | Supabase PostgreSQL |
+
+### Frontend Deployment (Vercel)
+
+```bash
+cd frontend
+vercel --prod
+```
+
+Set environment variable: `VITE_API_URL=https://your-backend.com/api`
+
+### Backend Deployment
+
+1. Set all environment variables from `.env.example`
+2. Run `pnpm db:migrate` on the production database
+3. Deploy to Railway/Render
 
 ## License
 
