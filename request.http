@@ -1,0 +1,150 @@
+### ─── Variables ─────────────────────────────────────────────
+@baseUrl = http://localhost:4000/api
+
+
+### ─── Health Check ──────────────────────────────────────────
+
+GET {{baseUrl}}/health
+
+
+### ─── Auth: Login (sets httpOnly cookie) ────────────────────
+
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "baban567899@gmail.com",
+  "password": "admin123"
+}
+
+
+### ─── Auth: Get Current Admin ───────────────────────────────
+
+GET {{baseUrl}}/auth/me
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Auth: Logout (clears cookie) ──────────────────────────
+
+POST {{baseUrl}}/auth/logout
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Leads: Create (Public) ────────────────────────────────
+
+POST {{baseUrl}}/leads
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "+1234567890",
+  "course": "Web Development",
+  "college": "MIT",
+  "year": "3rd"
+}
+
+
+### ─── Leads: Create (Duplicate — should return 409) ─────────
+
+POST {{baseUrl}}/leads
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "+1234567890",
+  "course": "Web Development",
+  "college": "MIT",
+  "year": "3rd"
+}
+
+
+### ─── Leads: Create Another ─────────────────────────────────
+
+POST {{baseUrl}}/leads
+Content-Type: application/json
+
+{
+  "name": "Jane Smith",
+  "email": "jane@example.com",
+  "phone": "+9876543210",
+  "course": "Data Science",
+  "college": "Stanford",
+  "year": "2nd"
+}
+
+
+### ─── Leads: Create Invalid (should return 400) ─────────────
+
+POST {{baseUrl}}/leads
+Content-Type: application/json
+
+{
+  "name": "X",
+  "email": "not-an-email",
+  "phone": "123",
+  "course": "",
+  "college": "",
+  "year": ""
+}
+
+
+### ─── Leads: List All (Protected — needs cookie) ───────────
+
+GET {{baseUrl}}/leads?page=1&limit=10
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Leads: Search by Name ─────────────────────────────────
+
+GET {{baseUrl}}/leads?search=john
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Leads: Filter by Course ───────────────────────────────
+
+GET {{baseUrl}}/leads?course=Web Development
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Leads: Filter by Status ───────────────────────────────
+
+GET {{baseUrl}}/leads?status=NEW
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Leads: Combined Search + Filter ───────────────────────
+
+GET {{baseUrl}}/leads?search=jane&course=Data Science&page=1&limit=5
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Leads: Update Status ──────────────────────────────────
+### Replace <LEAD_ID> with an actual lead UUID from list response
+
+PATCH {{baseUrl}}/leads/<LEAD_ID>/status
+Content-Type: application/json
+Cookie: token={{login.response.headers.set-cookie}}
+
+{
+  "status": "CONTACTED"
+}
+
+
+### ─── Leads: Get by ID ─────────────────────────────────────
+### Replace <LEAD_ID> with an actual lead UUID
+
+GET {{baseUrl}}/leads/<LEAD_ID>
+Cookie: token={{login.response.headers.set-cookie}}
+
+
+### ─── Leads: List without Auth (should return 401) ──────────
+
+GET {{baseUrl}}/leads?page=1&limit=10
+
+
+### ─── 404 Route ─────────────────────────────────────────────
+
+GET {{baseUrl}}/nonexistent

@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+}
+
+model Lead {
+  id         String     @id @default(uuid())
+  name       String
+  email      String     @unique
+  phone      String
+  course     String
+  college    String
+  year       String
+  status     LeadStatus @default(NEW)
+  sheetRowId String?
+  createdAt  DateTime   @default(now())
+
+  @@index([email])
+  @@index([status])
+  @@index([course])
+  @@index([createdAt])
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
